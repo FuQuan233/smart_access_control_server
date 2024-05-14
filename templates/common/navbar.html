@@ -1,0 +1,38 @@
+<nav class="navbar navbar-default" role="navigation">
+    <div class="container-fluid">
+        <!-- 导航头部 -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse-example">
+                <span class="sr-only">切换导航</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="/" class="navbar-brand"> <span class="brand-title">智能门禁系统</span> <i data-toggle="tooltip" id="compactTogger" data-placement="bottom" class="icon icon-home" data-original-title="" title=""></i></a>
+        </div>
+        <!-- 导航项目 -->
+        <div class="collapse navbar-collapse navbar-collapse-example">
+            <ul class="nav navbar-nav">
+                <li {% if toggle == 'doorlocks' %} class="active" {% endif %}><a href="/doorlocks/">门禁列表</a></li>
+            </ul>
+            <!-- 右侧的导航项目 -->
+            <ul class="nav navbar-nav navbar-right">
+            {% if user.is_authenticated %}
+                <li><a href="https://github.com/easysoft/zui" target="_blank"><span> </span></a></li>
+                <li class="dropdown">
+                    <a href="your/nice/url" class="dropdown-toggle" data-toggle="dropdown"><i class="icon icon-user"></i> {{ user.first_name }} <b class="caret"></b></a>
+                    <ul class="dropdown-menu" role="menu">
+                    {% if user.is_staff %}
+                    <li><a href="/admin/"><i class="icon icon-user"></i><span> 后台管理</span></a></li>
+                    {% endif %}
+                    <li class="divider"></li>
+                    <li><a href="{% url 'accounts:logout' %}"><i class="icon icon-signout"></i><span> 退出登录</span></a></li>
+                    </ul>
+                </li>
+            {% else %}
+                <li><a href="{% url 'accounts:login' %}"><i class="icon icon-signin"></i><span> 登录</span></a></li>
+            {% endif %}
+            </ul>
+        </div><!-- END .navbar-collapse -->
+    </div>
+</nav>

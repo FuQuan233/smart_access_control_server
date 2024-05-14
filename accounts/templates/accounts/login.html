@@ -1,0 +1,69 @@
+{% include "common/head.html" with title="登录" %}
+
+<body>
+    {% include "common/navbar.html" %}
+
+    <!-- {% if form.errors and not form.non_field_errors %}
+    <p class="errornote">
+    请修正下面的错误
+    </p>
+    {% endif %}
+
+    {% if form.non_field_errors %}
+    {% for error in form.non_field_errors %}
+    <p class="errornote">
+        {{ error }}
+    </p>
+    {% endfor %}
+    {% endif %}
+
+    <form action="{{ app_path }}" method="post" id="login-form">{% csrf_token %}
+        <div class="form-row">
+            {{ form.username.errors }}
+            {{ form.username.label_tag }} {{ form.username }}
+        </div>
+        <div class="form-row">
+            {{ form.password.errors }}
+            {{ form.password.label_tag }} {{ form.password }}
+            <input type="hidden" name="next" value="{{ next }}">
+        </div>
+        {% url 'admin_password_reset' as password_reset_url %}
+        {% if password_reset_url %}
+        {% endif %}
+        <div class="submit-row">
+            <input type="submit" value="登录">
+        </div>
+    </form> -->
+
+    <div class="panel" id="login-pure">
+        <div id="login-region">
+            <div class="panel-heading">
+                <span>欢迎登录！</span>
+            </div>
+            <div class="panel-body">
+                <form method="post" id="login-form">
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                    {% for error in form.non_field_errors %}
+                    <div class="alert alert-danger">{{ error }}</div>
+                    {% endfor %}
+                    {% endif %}
+                    <div class="form-group {% if form.username.errors %} has-error {% endif %}">
+                        <input type="text" name="username" id="account" value="" placeholder="请输入用户名"
+                            class="form-control input-lg" autofocus="autofocus">
+                    </div>
+                    <div class="form-group">
+                        {{ form.password.errors }}
+                        <input type="password" name="password" id="password" value="" placeholder="请输入密码"
+                            class="form-control input-lg">
+                    </div>
+
+                    <input type="submit" id="submit" class="btn btn-primary btn-wider btn-lg btn-block" value="登录"
+                        data-loading="稍候...">
+
+                </form>
+            </div>
+        </div>
+    </div>
+</body>

@@ -1,0 +1,22 @@
+{% include "common/head.html" with title="首页" %}
+
+<body>
+    {% include "common/navbar.html" %}
+
+<p>加载中</p>
+</body>
+<!-- {% if doorlock_list %}
+    <ul>
+    {% for doorlock in doorlock_list %}
+        <li><a href="/doorlock/{{ doorlock.id }}/">{{ doorlock.name }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No doorlock are available.</p>
+{% endif %} -->
+
+<script type="text/javascript">
+    window.onload = function () {
+        window.location.href = "doorlocks/";
+    }
+</script>

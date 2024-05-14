@@ -1,0 +1,61 @@
+{% include "common/head.html" with title="门禁列表" %}
+
+<body>
+    {% include "common/navbar.html" with toggle="doorlocks" %}
+
+    <div style="padding-right: 3%;padding-left: 3%;">
+        <div class="cards">
+            {% for doorlock in doorlock_list %}
+            <div class="col-md-3 col-sm-4 col-lg-2 col-xs-6">
+                <div class="card" onclick="window.location.href = '{% url 'control:detail' doorlock_id=doorlock.id%}'">
+                    <div class="card-heading"><strong>{{ doorlock.name }}</strong></div>
+                    <div class="card-content text-muted">这是一个门锁这是一个门锁这是一个门锁</div>
+                    <div class="card-actions">
+                        <a type="button" class="btn btn-default" onclick="unlock('{% url 'control:unlock' doorlock_id=doorlock.id%}')">
+                            <i class="icon-unlock-alt"></i> 开锁
+                        </a>
+                        <div class="pull-right text-success"><i class="icon-check"></i> 在线</div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-md-12 col-sm-12 col-lg-12 col-xs-12">
+                <!-- <a class="card" href="###"> -->
+                <!-- <div class="card-heading"><strong>{{ doorlock.name }}</strong></div> -->
+                <div class="card-content" style="text-align: center;"><strong>没有可用的门禁授权，请联系管理员授权</strong></div>
+            </a>
+        </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+
+<script>
+function unlock(url) {
+    event.stopPropagation()
+    $.ajax({
+        url: url,
+        type: 'GET',
+        success: function(response) {
+            // 根据返回结果执行不同的代码
+            if (response.code === 0) {
+                new $.zui.Messager(response.message, {
+                    type: 'success',
+                    icon: 'ok-sign'
+                }).show();
+            } else {
+                new $.zui.Messager(response.message, {
+                    type: 'danger',
+                    icon: 'warning-sign'
+                }).show();
+            }
+        },
+        error: function(xhr, status, error) {
+            new $.zui.Messager('发生错误: ' + error, {
+                type: 'danger',
+                icon: 'exclamation-sign'
+            }).show();
+        }
+    });
+}
+</script>
