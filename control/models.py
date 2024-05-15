@@ -31,7 +31,7 @@ class DoorLock(models.Model):
     def is_online(self):
         if self.last_seen == None:
             return False
-        if timezone.now() - self.last_seen > timedelta(seconds=20):
+        if timezone.now() - self.last_seen > timedelta(seconds=13):
             return False
         return True
 
