@@ -9,12 +9,16 @@
             <div class="col-md-3 col-sm-4 col-lg-2 col-xs-6">
                 <div class="card" onclick="window.location.href = '{% url 'control:detail' doorlock_id=doorlock.id%}'">
                     <div class="card-heading"><strong>{{ doorlock.name }}</strong></div>
-                    <div class="card-content text-muted">这是一个门锁这是一个门锁这是一个门锁</div>
+                    <div class="card-content text-muted">{{ doorlock.comment }}</div>
                     <div class="card-actions">
                         <a type="button" class="btn btn-default" onclick="unlock('{% url 'control:unlock' doorlock_id=doorlock.id%}')">
                             <i class="icon-unlock-alt"></i> 开锁
                         </a>
-                        <div class="pull-right text-success"><i class="icon-check"></i> 在线</div>
+                        {% if doorlock.is_online %}
+                            <div class="pull-right text-success"><i class="icon-check"></i> 在线</div>
+                        {% else %}
+                            <div class="pull-right text-danger"><i class="icon-times"></i> 离线</div>
+                        {% endif %}
                     </div>
                 </div>
             </div>

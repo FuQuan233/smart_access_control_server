@@ -103,17 +103,23 @@ def door_unlock(request:WSGIRequest, doorlock_id):
     if not doorlock_list.__contains__(doorlock):
         raise Http404("No DoorLock matches the given query.")
 
-    try:
-        unlock_doorlock(doorlock)
+    if doorlock.is_online():
+        try:
+            unlock_doorlock(doorlock)
 
-        response_data = {
-            'code': 0,
-            'message': f"{doorlock.name}开锁成功",
-        }
-    except:
+            response_data = {
+                'code': 0,
+                'message': f"{doorlock.name}开锁成功",
+            }
+        except:
+            response_data = {
+                'code': 1,
+                'message': f"{doorlock.name}开锁失败",
+            }
+    else:
         response_data = {
             'code': 1,
-            'message': f"{doorlock.name}开锁失败",
+            'message': f"{doorlock.name}不在线",
         }
     return JsonResponse(response_data)
 

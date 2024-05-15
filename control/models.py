@@ -1,10 +1,18 @@
 from django.db import models
 from django.contrib.auth.models import Group, User
+from django.forms import ValidationError
+from django.utils import timezone
+from datetime import timedelta
 
+def validate_exact_length(value):
+    if len(value) != 16:
+        raise ValidationError('Field length must be exactly 16 characters.')
 class DoorLock(models.Model):
     name = models.CharField("名称", max_length=200)
-    key = models.CharField("密钥", max_length=200)
+    comment = models.CharField("简介", max_length=200)
+    key = models.CharField("密钥", max_length=200, validators=[validate_exact_length])
     rolling_code = models.BigIntegerField("滚码", default=0)
+    last_seen = models.DateTimeField("上次心跳", default=timezone.datetime.fromisoformat("1970-01-01 00:00:00"))
 
     class Meta:
         verbose_name = "门禁"
@@ -19,6 +27,13 @@ class DoorLock(models.Model):
             self.rolling_code = 0
         self.save()
         return self.rolling_code
+    
+    def is_online(self):
+        if self.last_seen == None:
+            return False
+        if timezone.now() - self.last_seen > timedelta(seconds=20):
+            return False
+        return True
 
 class GroupDoorLock(models.Model):
     comment = models.CharField("描述", max_length=200)

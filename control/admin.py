@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import GroupAdmin as BaseGroupAdmin
 from django.contrib.auth.models import Group
-
+from .views import unlock_doorlock
 from .models import DoorLock, GroupDoorLock, UserDoorLock
 
 admin.site.site_header = "智能门禁系统后台管理"
@@ -10,6 +10,14 @@ admin.site.site_title = "后台管理系统"
 class DoorLockAdmin(admin.ModelAdmin):
     list_display = ["name"]
     search_fields = ["name"]
+    actions = ['open_door']
+
+    def open_door(self, request, queryset):
+        # 处理动作的逻辑
+        for one in queryset:
+            unlock_doorlock(one)
+        self.message_user(request, f"{'、'.join(one.name for one in queryset)} 已开启")
+    open_door.short_description = "开启所选的 门禁"
 
 admin.site.register(DoorLock, DoorLockAdmin)
 
