@@ -3,6 +3,8 @@ from django.contrib.auth.models import Group, User
 from django.forms import ValidationError
 from django.utils import timezone
 from datetime import timedelta
+from django.contrib import admin
+
 
 def validate_exact_length(value):
     if len(value) != 16:
@@ -28,6 +30,11 @@ class DoorLock(models.Model):
         self.save()
         return self.rolling_code
     
+    @admin.display(
+        boolean=True,
+        ordering="last_seen",
+        description="是否在线",
+    )
     def is_online(self):
         if self.last_seen == None:
             return False

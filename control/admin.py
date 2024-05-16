@@ -3,14 +3,17 @@ from django.contrib.auth.admin import GroupAdmin as BaseGroupAdmin
 from django.contrib.auth.models import Group
 from .views import unlock_doorlock
 from .models import DoorLock, GroupDoorLock, UserDoorLock
+from django.utils import timezone
+from datetime import timedelta
 
 admin.site.site_header = "智能门禁系统后台管理"
 admin.site.site_title = "后台管理系统"
 
 class DoorLockAdmin(admin.ModelAdmin):
-    list_display = ["name"]
+    list_display = ["name", "id", "is_online"]
     search_fields = ["name"]
     actions = ['open_door']
+    exclude = ['last_seen']
 
     def open_door(self, request, queryset):
         # 处理动作的逻辑
