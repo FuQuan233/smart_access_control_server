@@ -23,23 +23,37 @@ class DoorLock(models.Model):
     def __str__(self):
         return self.name
     
+    # 定义一个类方法，用于获取和更新门锁的滚动码
     def get_rolling_code(self):
+        # 滚动码自增1
         self.rolling_code += 1
-        if self.rolling_code > 9223372036854775807 - 1:  #防止溢出
+        
+        # 防止滚动码溢出
+        if self.rolling_code > 9223372036854775807 - 1:
             self.rolling_code = 0
+        
+        # 保存对象的当前状态
         self.save()
+        
+        # 返回更新后的滚动码
         return self.rolling_code
-    
+
+    # 在admin面板中显示是否在线的函数
     @admin.display(
-        boolean=True,
-        ordering="last_seen",
-        description="是否在线",
+        boolean=True,  # 显示为布尔值
+        ordering="last_seen",  # 按照last_seen字段排序
+        description="是否在线",  # 显示的描述
     )
     def is_online(self):
-        if self.last_seen == None:
+        # 如果last_seen为None，则不在线
+        if self.last_seen is None:
             return False
+        
+        # 如果当前时间与last_seen的时间差大于13秒，则不在线
         if timezone.now() - self.last_seen > timedelta(seconds=13):
             return False
+        
+        # 否则在线
         return True
 
 class GroupDoorLock(models.Model):

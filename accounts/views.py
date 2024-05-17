@@ -7,19 +7,10 @@ from django.core.handlers.wsgi import WSGIRequest
 from django.contrib.auth.decorators import login_required
 from .models import *
 
-# Create your views here.
-def register(request:WSGIRequest):
-    if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect('home')  # 重定向到注册成功后的页面
-    else:
-        form = UserCreationForm()
-    return render(request, 'registration/register.html', {'form': form})
-
 def user_login(request:WSGIRequest):
+    """
+    用户登录
+    """
     if request.user.is_authenticated:
         return redirect('/')
     if request.method == 'POST':
@@ -36,5 +27,8 @@ def user_login(request:WSGIRequest):
     return render(request, 'accounts/login.html', {'form': form})
 
 def user_logout(request:WSGIRequest):
+    """
+    用户登出
+    """
     logout(request)
     return redirect('/')  # 重定向到注销成功后的页面

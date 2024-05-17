@@ -7,7 +7,7 @@
         <div class="cards">
             {% for doorlock in doorlock_list %}
             <div class="col-md-3 col-sm-4 col-lg-2 col-xs-6">
-                <div class="card" onclick="window.location.href = '{% url 'control:detail' doorlock_id=doorlock.id%}'">
+                <div class="card">
                     <div class="card-heading"><strong>{{ doorlock.name }}</strong></div>
                     <div class="card-content text-muted">{{ doorlock.comment }}</div>
                     <div class="card-actions">

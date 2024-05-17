@@ -15,28 +15,51 @@ from Crypto.Cipher import AES
 import base64
 from .models import *
 
+client = mqtt.Client(1)
+client.connect("shanghai.fuquan.moe", 31883)
+
 def get_doorlocks(user: User):
+    """
+    获取用户的所有门锁
+    """
+    # 初始化一个空的门锁列表
     doorlock_list = []
     
+    # 获取用户的门锁访问权限列表
     user_access_list = UserDoorLock.objects.filter(user=user)
+    
+    # 遍历用户的门锁访问权限列表
     for one in user_access_list:
+        # 如果当前访问权限未过期
         if one.expireTime > timezone.now():
+            # 遍历当前访问权限关联的所有门锁
             for one_doorlock in one.doorlock.all():
+                # 如果门锁不在门锁列表中，则添加到门锁列表中
                 if not doorlock_list.__contains__(one_doorlock):
                     doorlock_list.append(one_doorlock)
 
+    # 获取用户所属群组的门锁访问权限列表
     group_access_list = GroupDoorLock.objects.filter(group__in=user.groups.all())
 
+    # 遍历群组的门锁访问权限列表
     for one in group_access_list:
+        # 如果当前访问权限未过期
         if one.expireTime > timezone.now():
+            # 遍历当前访问权限关联的所有门锁
             for one_doorlock in one.doorlock.all():
+                # 如果门锁不在门锁列表中，则添加到门锁列表中
                 if not doorlock_list.__contains__(one_doorlock):
                     doorlock_list.append(one_doorlock)
                     
+    # 返回门锁列表
     return doorlock_list
+
 
 @login_required
 def door_locks(request:WSGIRequest):
+    """
+    门锁列表界面
+    """
     doorlock_list = get_doorlocks(request.user)
     return render(request, 'control/doorlocks.html', {'doorlock_list': doorlock_list})
 
@@ -86,18 +109,37 @@ def decrypt(key, encrypted_text):
     decrypted_bytes = cipher.decrypt(encrypted_bytes)
     return unpad(decrypted_bytes.decode('utf-8'))
 
-def unlock_doorlock(doorlock:DoorLock):
-    client = mqtt.Client(1)
-    client.connect("10.0.0.183", 1883)
+def unlock_doorlock(doorlock: DoorLock):
+    """
+    开启门锁函数，向门锁发送开启信号
+    """
+    # 初始化一个字典来存储解锁数据
     unlockdata = {}
+    
+    # 获取门锁的滚动码并添加到解锁数据字典中
     unlockdata["rollingcode"] = doorlock.get_rolling_code()
+    
+    # 添加解锁动作到解锁数据字典中
     unlockdata["action"] = "open"
+    
+    # 检查客户端是否已连接，如果未连接则重新连接
+    if not client.is_connected():
+        client.reconnect()
+    
+    # 将解锁数据字典转换为JSON字符串
     unlockstr = json.dumps(unlockdata)
+    
+    # 使用门锁的密钥加密JSON字符串
     ciphertext = encrypt(doorlock.key.encode(), unlockstr)
+    
+    # 将加密后的字符串发布到以门锁ID命名的频道
     client.publish(str(doorlock.id), ciphertext)
 
 @login_required
 def door_unlock(request:WSGIRequest, doorlock_id):
+    """
+    用户开锁请求
+    """
     doorlock_list = get_doorlocks(request.user)
     doorlock = get_object_or_404(DoorLock, pk = doorlock_id)
     if not doorlock_list.__contains__(doorlock):
